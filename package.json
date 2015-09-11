@@ -1,0 +1,11 @@
+{
+    "name": "tern-idl-type",
+    "description": "Converts a WebIDL file to a tern type definition file",
+    "repository": "?",
+    "dependencies": {
+        "jison": "*"
+    },
+    "scripts": {
+        "start": "node idl.js"
+    }
+}
