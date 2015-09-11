@@ -29,14 +29,14 @@ expressions
         ;
 
 statement
-        : comment                  { $$ = ['comment']; }
-        | typedef ids ';'          { var a = $2.splice(-1)[0]; $$ = ['typedef', $2.join(' '), a]; }
-        | id implements id ';'     { $$ = ['implements', $1, $3]; }
-        | dict id body             { $$ = ['dict', $2, $3]; }
-        | dict id ':' id body      { $$ = ['dict', $2, $5, $4]; }
-        | interface id body        { $$ = ['interface', $2, $3]; }
-        | interface id ':' id body { $$ = ['interface', $2, $5, $4]; }
-        | Attribute                { $$ = ['attribute']; }
+        : comment                  { $$ = {'comment':yytext}; }
+        | typedef ids ';'          { $$ = yy.parser.Def($2.splice(-1)[0], yy.parser.map_simple_type($2.join(' '))); }
+        | id implements id ';'     { $$ = yy.parser.Def($1, {"!type": "fn()", "prototype": $3}); }
+        | dict id body             { $$ = yy.parser.Def($2, yy.parser.Body($3)); }
+        | dict id ':' id body      { $$ = yy.parser.Def($2, yy.parser.Body($5)); }
+        | interface id body        { $$ = yy.parser.Def($2, yy.parser.Body($3)); }
+        | interface id ':' id body { $$ = yy.parser.Def($2, yy.parser.Body($5)); }
+        | Attribute statement      { $$ = $2; $$.attribs = $1; }
         ;
 
 ids : id { $$ = [ $1 ] }
@@ -44,7 +44,7 @@ ids : id { $$ = [ $1 ] }
     ;
 
 body
-        : '{' '}' ';'          -> null
+        : '{' '}' ';'          -> []
         | '{' members '}' ';'  -> $2
         ;
 
@@ -57,7 +57,7 @@ def_line
         | type id '=' id ';'     -> {'type': $1, 'name': $2, value: $4, 'attrib': []}
         | type id ';'            -> {'type': $1, 'name': $2, 'attrib': []}
         | type id parameters ';' {
-             var p = $3.map(function(x) { return x[0] + ': ' + x[1];  }).join(', ')
+             var p = $3.map(function(x) { return x[1] + ': ' + x[0];  }).join(', ')
              $$ = {'type': 'fn('+ p +') -> '+ $1, 'name': $2}
           }
         | Attribute def_line     -> $2
