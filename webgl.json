@@ -1,4 +1,5 @@
 {
+  "!name": "webgl",
   "WebGLActiveInfo": {
     "size": "GLint",
     "type": "GLenum",
