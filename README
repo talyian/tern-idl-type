@@ -1,1 +1,29 @@
 tern-idl-type turns a webidl file into a .json usable by tern.
+
+Example:
+
+    node idl.js < webgl.idl > jq -S '{"!name": "webgl"} + add' > webgl.json
+
+Input:
+
+    typedef boolean GLboolean;
+    dictionary WebGLContextAttributes {
+        GLboolean alpha = true;
+       ....
+    interface WebGLRenderingContextBase {
+        void activeTexture(GLenum texture);
+        ...
+
+Output
+
+    {
+         "!name": "webgl",
+         "GLboolean": "boolean",
+         ...
+         "WebGLContextAttributes" : {
+             "alpha": "GLboolean",
+             ...
+         "WebGLRenderingContextBase": {
+             "activeTexture": "fn(texture: GLenum) -> void",
+             ...
+    }
